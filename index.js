@@ -57,6 +57,19 @@ async function run() {
         })
 
 
+        // get contact list based on user email
+
+
+        app.get('/contacts/:email', async (req, res) => {
+            const email = req.params.email;
+
+            const query = { intertByEmail: email }
+            const result = await contactCollection.find(query).sort({ _id: -1 }).toArray()
+
+            res.send(result)
+        })
+
+
 
 
 
