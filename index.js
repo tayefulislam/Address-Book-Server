@@ -12,7 +12,7 @@ app.use(express.json())
 app.use(cors())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const { async } = require("@firebase/util");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.pha46.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -66,6 +66,16 @@ async function run() {
             const query = { intertByEmail: email }
             const result = await contactCollection.find(query).sort({ _id: -1 }).toArray()
 
+            res.send(result)
+        })
+
+
+        // get contact details
+        app.get('/contactsDetails/:id', async (req, res) => {
+            const id = req.params.id;
+
+            console.log(id)
+            const result = await contactCollection.findOne({ _id: ObjectId(id) })
             res.send(result)
         })
 
