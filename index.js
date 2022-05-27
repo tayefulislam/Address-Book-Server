@@ -44,6 +44,18 @@ async function run() {
 
         })
 
+        // add new contact in bulk
+
+        app.post('/addBulkContact', async (req, res) => {
+            const bulkContact = req.body;
+
+            const options = { ordered: true }
+
+            const result = await contactCollection.insertMany(bulkContact, options)
+
+            res.send(result)
+        })
+
 
 
 
