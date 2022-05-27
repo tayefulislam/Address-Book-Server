@@ -74,8 +74,19 @@ async function run() {
         app.get('/contactsDetails/:id', async (req, res) => {
             const id = req.params.id;
 
-            console.log(id)
+            // console.log(id)
             const result = await contactCollection.findOne({ _id: ObjectId(id) })
+            res.send(result)
+        })
+
+
+        // delete contact
+
+        app.post('/contact/delete/:id', async (req, res) => {
+            const id = req.params.id;
+
+            const result = await contactCollection.deleteOne({ _id: ObjectId(id) })
+
             res.send(result)
         })
 
