@@ -29,6 +29,34 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // });
 
 
+
+// function verifyJWT
+
+
+function verifyJWT(req, res, next) {
+
+    const authentication = req.headers.authentication;
+    const token = authentication.split(' ')[1]
+
+    if (!token) {
+        return res.status(401).send('Unauthorized');
+    }
+    jwt.verify(token, process.env.secretKey, function (err, decoded) {
+
+        if (err) {
+
+            return res.status(403).send('Forbidden')
+        }
+        req.decoded = decoded
+        next()
+    });
+
+}
+
+
+
+
+
 async function run() {
     try {
         await client.connect()
@@ -48,7 +76,7 @@ async function run() {
 
         // add new contact in bulk
 
-        app.post('/addBulkContact', async (req, res) => {
+        app.post('/addBulkContact', verifyJWT, async (req, res) => {
             const bulkContact = req.body;
 
             const options = { ordered: true }
@@ -62,7 +90,7 @@ async function run() {
         // get contact list based on user email
 
 
-        app.get('/contacts/:email', async (req, res) => {
+        app.get('/contacts/:email', verifyJWT, async (req, res) => {
 
             const email = req.params.email;
 
@@ -91,7 +119,7 @@ async function run() {
 
 
         // get contact details
-        app.get('/contactsDetails/:id', async (req, res) => {
+        app.get('/contactsDetails/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
 
             // console.log(id)
@@ -102,7 +130,7 @@ async function run() {
 
         // delete contact
 
-        app.post('/contact/delete/:id', async (req, res) => {
+        app.post('/contact/delete/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
 
             const result = await contactCollection.deleteOne({ _id: ObjectId(id) })
