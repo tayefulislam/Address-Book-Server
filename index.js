@@ -73,6 +73,18 @@ async function run() {
             res.send(result)
 
         })
+        // add new contact
+
+        app.post('/updateContact/:id', verifyJWT, async (req, res) => {
+
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const updateContact = req.body;
+            const updateDoc = { $set: updateContact }
+            const result = await contactCollection.updateOne(filter, updateDoc);
+            res.send(result)
+
+        })
 
         // add new contact in bulk
 
@@ -139,7 +151,7 @@ async function run() {
         })
 
 
-        // issu token
+        // issue token
 
         app.post('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -168,6 +180,11 @@ run().catch(console.dir)
 
 app.get('/', (req, res) => {
     res.send('Welcome To Address Book')
+
+})
+
+app.get('/serverCheck', (req, res) => {
+    res.send('Server check')
 
 })
 
