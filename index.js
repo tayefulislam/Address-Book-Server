@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require('jsonwebtoken');
+
 require('dotenv').config()
 
 const app = express()
@@ -61,13 +63,31 @@ async function run() {
 
 
         app.get('/contacts/:email', async (req, res) => {
+
             const email = req.params.email;
 
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
+            let result;
+
             const query = { intertByEmail: email }
-            const result = await contactCollection.find(query).sort({ _id: -1 }).toArray()
+            if (page || size) {
+
+                result = await contactCollection.find(query).skip(page * size).limit(size).sort({ _id: -1 }).toArray()
+
+
+            } else {
+                result = await contactCollection.find(query).sort({ _id: -1 }).toArray()
+
+            }
 
             res.send(result)
-        })
+
+
+
+        });
+
+
 
 
         // get contact details
@@ -89,6 +109,19 @@ async function run() {
 
             res.send(result)
         })
+
+
+        // issu token
+
+        app.post('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email)
+
+            const token = jwt.sign({ email: email }, process.env.secretKey, { expiresIn: '1d' });
+            console.log(token)
+            res.send(token)
+        })
+
 
 
 
